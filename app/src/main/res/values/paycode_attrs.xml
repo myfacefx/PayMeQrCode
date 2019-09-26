@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PayCode">
+        <attr name="color" format="color" />
+        <attr name="backgroundColor" format="color" />
+        <attr name="margin" format="dimension" />
+        <attr name="text" format="string" />
+        <attr name="qrLogo" format="integer" />
+        <attr name="qrIcon" format="integer" />
+    </declare-styleable>
+</resources>

@@ -1,64 +1,127 @@
 package qrcode;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
 import android.graphics.RectF;
+import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
 import com.everonet.payme.qrcode.R;
 
-import static android.graphics.Bitmap.Config.ARGB_8888;
-import static android.graphics.PorterDuff.Mode.SRC_IN;
+import androidx.annotation.Nullable;
 
 public class PayCode extends View {
 
     private static final String TAG = PayCode.class.getSimpleName();
 
-    private static final int color = Color.rgb(219, 0, 17);
     private static final float logoPercent = 0.25f;
     private static final float iconPercent = 0.12f;
     private static final float logoClipPercent = 0.27f;
     private static final float iconClipPercent = 0.13f;
 
-    private float width = 500;
-    private float margin = 16;
-
     private String text;
-    private Paint paintDot;
-    private Paint paintEye;
-    private Paint paintBg;
+    private int color;
+    private int backgroundColor;
+    private float width;
+    private float margin;
+    private Bitmap bitmapLogo;
+    private Bitmap bitmapIcon;
+
+    private Paint paint;
     private QRCode qrCode;
-    private Bitmap bitmapLogo = BitmapFactory.decodeResource(getResources(), R.drawable.logo_payme);
-    private Bitmap bitmapIcon = BitmapFactory.decodeResource(getResources(), R.drawable.icon_payme);
 
-    public PayCode(Context context, String text) {
-        super(context);
-        this.text = text;
-
-        init();
+    public PayCode(Context context) {
+        this(context, null);
     }
 
-    private void init() {
-        paintDot = new Paint();
-        paintEye = new Paint();
-        paintBg = new Paint();
-        qrCode = new QRCode();
-        qrCode.setTypeNumber(6);
-        qrCode.setErrorCorrectionLevel(ErrorCorrectionLevel.H);
-        qrCode.addData(text);
-        qrCode.make();
+    public PayCode(Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public PayCode(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        //获取自定义属性
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PayCode);
+        text = ta.getString(R.styleable.PayCode_text);
+        color = ta.getColor(R.styleable.PayCode_color, Color.rgb(219, 0, 17));
+        backgroundColor = ta.getColor(R.styleable.PayCode_backgroundColor, Color.WHITE);
+        margin = ta.getDimension(R.styleable.PayCode_margin, 16);
+        int resLogo = ta.getResourceId(R.styleable.PayCode_qrLogo, R.drawable.logo_payme);
+        int resIcon = ta.getResourceId(R.styleable.PayCode_qrIcon, R.drawable.icon_payme);
+        ta.recycle();
+
+        bitmapLogo = BitmapFactory.decodeResource(getResources(), resLogo);
+        bitmapIcon = BitmapFactory.decodeResource(getResources(), resIcon);
+
+        paint = new Paint();
+    }
+
+    public void drawQrCode(String text, int resId) {
+        drawQrCode(text, BitmapFactory.decodeResource(getResources(), resId));
+    }
+
+    public void drawQrCode(String text, Bitmap bitmap) {
+        this.text = text;
+        this.bitmapLogo = bitmap;
+        invalidate();
+    }
+
+    public void setText(String text) {
+        this.text = text;
+        invalidate();
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+        invalidate();
+    }
+
+    public void setQrBackgroundColor(int backgroundColor) {
+        this.backgroundColor = backgroundColor;
+        invalidate();
+    }
+
+    public void setWidth(float width) {
+        this.width = width;
+        invalidate();
+    }
+
+    public void setMargin(float margin) {
+        this.margin = margin;
+        invalidate();
+    }
+
+    public void setBitmapLogo(Bitmap bitmapLogo) {
+        this.bitmapLogo = bitmapLogo;
+        invalidate();
+    }
+
+    public void setBitmapIcon(Bitmap bitmapIcon) {
+        this.bitmapIcon = bitmapIcon;
+        invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
+
+        //让画出的图形是实心的
+        paint.setStyle(Paint.Style.FILL);
+
+        // draw background color
+        paint.setColor(backgroundColor);
+        canvas.drawRect(0, 0, width, width, paint);
+
+        if (TextUtils.isEmpty(text))
+            return;
+
+        qrCode = QRCode.getMinimumQRCode(text, ErrorCorrectionLevel.Q);
 
         int cellCount = qrCode.getModuleCount();
         Log.i(TAG, "cellCount : " + cellCount);
@@ -67,53 +130,23 @@ public class PayCode extends View {
         float logoLeftClip = (width / 2) - (((width - 2 * margin) * logoClipPercent) / 2);
         float logoRightClip = (width / 2) + (((width - 2 * margin) * logoClipPercent) / 2);
         float iconClip = width - cellRadius - margin - ((width - 2 * margin) * iconClipPercent);
-        //设置画笔颜色
-        paintDot.setColor(color);
-        //让画出的图形是实心的
-        paintDot.setStyle(Paint.Style.FILL);
-        //设置画笔颜色
-        paintEye.setColor(color);
-        //让画出的图形是空心的
-        paintEye.setStyle(Paint.Style.STROKE);
-        //设置画笔粗细
-        paintEye.setStrokeWidth(2.5f * cellRadius);
-
-        // white background
-        paintBg.setColor(Color.WHITE);
-        canvas.drawRect(0, 0, width, width, paintBg);
 
         // top left eye
-        canvas.drawRoundRect(offset, offset, offset + 12 * cellRadius, offset + 12 * cellRadius, cellRadius, cellRadius, paintEye);
-        canvas.drawRoundRect(offset + 3 * cellRadius, offset + 3 * cellRadius, offset + 9 * cellRadius, offset + 9 * cellRadius, cellRadius, cellRadius, paintDot);
+        drawEye(canvas, margin, 0, 0, cellRadius);
 
         // top right eye
-        float offsetY = offset + 2 * (cellCount - 7) * cellRadius;
-        canvas.drawRoundRect(offsetY, offset, offsetY + 12 * cellRadius, offset + 12 * cellRadius, cellRadius, cellRadius, paintEye);
-        canvas.drawRoundRect(offsetY + 3 * cellRadius, offset + 3 * cellRadius, offsetY + 9 * cellRadius, offset + 9 * cellRadius, cellRadius, cellRadius, paintDot);
+        float left = 2 * (cellCount - 7) * cellRadius;
+        drawEye(canvas, margin, left, 0, cellRadius);
 
         // bottom left eye
-        float offsetX = offset + 2 * (cellCount - 7) * cellRadius;
-        canvas.drawRoundRect(offset, offsetX, offset + 12 * cellRadius, offsetX + 12 * cellRadius, cellRadius, cellRadius, paintEye);
-        canvas.drawRoundRect(offset + 3 * cellRadius, offsetX + 3 * cellRadius, offset + 9 * cellRadius, offsetX + 9 * cellRadius, cellRadius, cellRadius, paintDot);
+        float top = 2 * (cellCount - 7) * cellRadius;
+        drawEye(canvas, margin, 0, top, cellRadius);
 
         // PayMe icon in bottom right
-        float iconWidth = ((width - 2 * margin) * iconPercent);
-        float ratio = iconWidth / bitmapIcon.getWidth();
-        float xOffset = width - margin - iconWidth;
-        float yOffset = width - margin - iconWidth;
-        Bitmap icon = scaleBitmap(bitmapIcon, ratio);
-        if (icon != null) {
-            // Apple design guidelines state that corner radius is 80px for a 512px icon
-            float radius = iconWidth * (80f / 512);
-            canvas.drawBitmap(getRoundedCornerBitmap(icon, radius), xOffset, yOffset, paintDot);
-        }
+        drawIcon(canvas);
+
         // business logo in the middle
-        float logoWidth = ((width - 2 * margin) * logoPercent);
-        float ratioLogo = logoWidth / bitmapLogo.getWidth();
-        Bitmap logo = scaleBitmap(bitmapLogo, ratioLogo);
-        if (logo != null) {
-            canvas.drawBitmap(logo, (width - logoWidth) / 2, (width - logoWidth) / 2, paintDot);
-        }
+        drawLogo(canvas);
 
         // draw dot
         for (int r = 0; r < cellCount; r++)
@@ -134,10 +167,10 @@ public class PayCode extends View {
                     continue;
                 }
 
-                boolean isDark = qrCode.isDark(r, c);
-                Log.i(TAG, isDark ? "1" : "0");
-                if (isDark) {
-                    canvas.drawCircle(x, y, cellRadius, paintDot);
+                if (qrCode.isDark(r, c)) {
+                    //设置画笔颜色
+                    paint.setColor(color);
+                    canvas.drawCircle(x, y, cellRadius, paint);
                 }
             }
 
@@ -146,60 +179,106 @@ public class PayCode extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int widthPixels = View.MeasureSpec.getSize(widthMeasureSpec);
-        int heightPixels = View.MeasureSpec.getSize(heightMeasureSpec);
-        Log.i(TAG, "widthPixels=" + widthPixels + " , heightPixels=" + heightPixels);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int width = getMySize(500, widthMeasureSpec);
+        int height = getMySize(500, heightMeasureSpec);
+
+        this.width = width;
+
+        if (width < height) {
+            height = width;
+        } else {
+            width = height;
+        }
+
+        setMeasuredDimension(width, height);
     }
 
     /**
-     * 按比例缩放图片
+     * 获取尺寸
      *
-     * @param origin 原图
-     * @param ratio  比例
-     * @return 新的bitmap
-     */
-    private Bitmap scaleBitmap(Bitmap origin, float ratio) {
-        if (origin == null) {
-            return null;
-        }
-        int width = origin.getWidth();
-        int height = origin.getHeight();
-        Matrix matrix = new Matrix();
-        matrix.preScale(ratio, ratio);
-        Bitmap newBM = Bitmap.createBitmap(origin, 0, 0, width, height, matrix, false);
-        if (newBM.equals(origin)) {
-            return newBM;
-        }
-        origin.recycle();
-        return newBM;
-    }
-
-    /**
-     * 将图片处理成圆角
-     *
-     * @param bitmap
-     * @param roundPx
+     * @param defaultSize
+     * @param measureSpec
      * @return
      */
-    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, final float roundPx) {
-        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-                bitmap.getHeight(), ARGB_8888);
-        Canvas canvas = new Canvas(output);
+    private int getMySize(int defaultSize, int measureSpec) {
+        int mySize = defaultSize;
 
-        final int color = 0xff424242;
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        final RectF rectF = new RectF(rect);
+        int mode = MeasureSpec.getMode(measureSpec);
+        int size = MeasureSpec.getSize(measureSpec);
 
-        paint.setAntiAlias(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(color);
-        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+        Log.i(TAG, "mode=" + mode + " , size=" + size);
 
-        paint.setXfermode(new PorterDuffXfermode(SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
+        switch (mode) {
+            case MeasureSpec.UNSPECIFIED: {//如果没有指定大小，就设置为默认大小
+                mySize = defaultSize;
+                break;
+            }
+            case MeasureSpec.AT_MOST: //如果测量模式是最大取值为size
+            case MeasureSpec.EXACTLY: {//如果是固定的大小，那就不要去改变它
+                mySize = size;
+                break;
+            }
+        }
+        return mySize;
+    }
 
-        return output;
+    /**
+     * 绘制定位眼
+     *
+     * @param canvas     画布
+     * @param margin     与边框的距离
+     * @param left       x 起点
+     * @param top        y 起点
+     * @param cellRadius 小圆点的半径
+     */
+    private void drawEye(Canvas canvas, float margin, float left, float top, float cellRadius) {
+
+        // 绘制外圈
+        paint.setColor(color); //设置画笔颜色
+        final RectF out = new RectF(margin + left, margin + top, margin + left + 14 * cellRadius, margin + top + 14 * cellRadius);
+        canvas.drawRoundRect(out, 2 * cellRadius, 2 * cellRadius, paint);
+
+        // 绘制中间圈
+        paint.setColor(backgroundColor);//设置画笔颜色
+        final RectF middle = new RectF(margin + left + 2 * cellRadius, margin + top + 2 * cellRadius, margin + left + 12 * cellRadius, margin + top + 12 * cellRadius);
+        canvas.drawRoundRect(middle, 2 * cellRadius, 2 * cellRadius, paint);
+
+        // 绘制内圈
+        paint.setColor(color);//设置画笔颜色
+        final RectF inner = new RectF(margin + left + 4 * cellRadius, margin + top + 4 * cellRadius, margin + left + 10 * cellRadius, margin + top + 10 * cellRadius);
+        canvas.drawRoundRect(inner, 2 * cellRadius, 2 * cellRadius, paint);
+    }
+
+    /**
+     * 画右下角的图标
+     *
+     * @param canvas
+     */
+    private void drawIcon(Canvas canvas) {
+        float iconWidth = ((width - 2 * margin) * iconPercent);
+        float ratio = iconWidth / bitmapIcon.getWidth();
+        float xOffset = width - margin - iconWidth;
+        float yOffset = width - margin - iconWidth;
+        Bitmap icon = BitmapUtil.scaleBitmap(bitmapIcon, ratio);
+        if (icon != null) {
+            // Apple design guidelines state that corner radius is 80px for a 512px icon
+            float radius = iconWidth * (80f / 512);
+            canvas.drawBitmap(BitmapUtil.getRoundedCornerBitmap(icon, radius), xOffset, yOffset, paint);
+        }
+    }
+
+    /**
+     * 画中间的图标
+     *
+     * @param canvas
+     */
+    private void drawLogo(Canvas canvas) {
+        float logoWidth = ((width - 2 * margin) * logoPercent);
+        float ratioLogo = logoWidth / bitmapLogo.getWidth();
+        Bitmap logo = BitmapUtil.scaleBitmap(bitmapLogo, ratioLogo);
+        if (logo != null) {
+            canvas.drawBitmap(logo, (width - logoWidth) / 2, (width - logoWidth) / 2, paint);
+        }
     }
 }
