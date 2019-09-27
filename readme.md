@@ -22,7 +22,7 @@ Step 2. Add the dependency
 
 ```gradle
 dependencies {
-    implementation 'com.github.phonechan:PayMeQrCode:v1.0'
+    implementation 'com.github.phonechan:PayMeQrCode:v1.1'
 }
 ```
 
