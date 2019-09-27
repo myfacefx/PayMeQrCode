@@ -63,10 +63,20 @@ public class PayCode extends View {
         paint = new Paint();
     }
 
+    /**
+     * generate QR code of text string
+     * @param text the content
+     * @param resId the image resource id
+     */
     public void drawQrCode(String text, int resId) {
         drawQrCode(text, BitmapFactory.decodeResource(getResources(), resId));
     }
 
+    /**
+     * generate QR code of text string
+     * @param text the content
+     * @param bitmap the bitmap
+     */
     public void drawQrCode(String text, Bitmap bitmap) {
         this.text = text;
         this.bitmapLogo = bitmap;
