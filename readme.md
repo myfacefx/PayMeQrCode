@@ -26,7 +26,7 @@ dependencies {
 }
 ```
 
-Step 3. Add the PayCode widget to the layout xml file 
+Step 3. Add the PayCode widget to your layout xml file 
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -52,7 +52,7 @@ Step 3. Add the PayCode widget to the layout xml file
 </RelativeLayout>
 ```
 
-Step 4. use the PayCode in the Activity
+Step 4. use the PayCode in your Activity
 
 ```java
 public class MainActivity extends AppCompatActivity {
