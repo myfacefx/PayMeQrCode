@@ -22,7 +22,7 @@ Step 2. Add the dependency
 
 ```gradle
 dependencies {
-    implementation 'com.github.phonechan:PayMeQrCode:v1.1'
+    implementation 'com.github.phonechan:PayMeQrCode:v1.2'
 }
 ```
 
@@ -69,7 +69,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         payCode = findViewById(R.id.pay_code);
-        payCode.drawQrCode(text, R.drawable.logo_payme);
+        
+        /**
+         * text : The content of QR code
+         * url : The url of center logo image
+         */
+        payCode.drawQrCode(text, "http://goo.gl/gEgYUd");
     }
 }
 ```
@@ -94,6 +99,14 @@ text|The content of QR code
 * Public methods
 
 ```java
+/**
+ * generate QR code of text string
+ *
+ * @param text the content
+ * @param url  the image resource url
+ */ 
+void drawQrCode(final String text, String url)
+
 /**
  * generate QR code of text string
  * @param text the content
