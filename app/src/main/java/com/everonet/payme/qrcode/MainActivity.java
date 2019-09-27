@@ -1,11 +1,11 @@
 package com.everonet.payme.qrcode;
 
+import android.app.Activity;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
 import qrcode.PayCode;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
