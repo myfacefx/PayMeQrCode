@@ -19,9 +19,6 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.qrcode.R;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 public class PayCode extends View {
 
     private static final String TAG = PayCode.class.getSimpleName();
@@ -83,18 +80,18 @@ public class PayCode extends View {
                 .load(url)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
-                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
                         drawQrCode(text, resource);
                     }
 
                     @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-                        drawQrCode(text, R.drawable.logo_payme);
+                    public void onLoadCleared(Drawable placeholder) {
+                        drawQrCode(text, bitmapLogo);
                     }
 
                     @Override
-                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                        drawQrCode(text, R.drawable.logo_payme);
+                    public void onLoadFailed(Drawable errorDrawable) {
+                        drawQrCode(text, bitmapLogo);
                     }
                 });
     }
