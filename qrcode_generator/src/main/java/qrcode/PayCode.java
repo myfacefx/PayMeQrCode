@@ -15,8 +15,6 @@ import android.view.View;
 
 import com.qrcode.R;
 
-import androidx.annotation.Nullable;
-
 public class PayCode extends View {
 
     private static final String TAG = PayCode.class.getSimpleName();
@@ -41,11 +39,11 @@ public class PayCode extends View {
         this(context, null);
     }
 
-    public PayCode(Context context, @Nullable AttributeSet attrs) {
+    public PayCode(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public PayCode(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public PayCode(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         //获取自定义属性
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PayCode);
@@ -65,7 +63,8 @@ public class PayCode extends View {
 
     /**
      * generate QR code of text string
-     * @param text the content
+     *
+     * @param text  the content
      * @param resId the image resource id
      */
     public void drawQrCode(String text, int resId) {
@@ -74,7 +73,8 @@ public class PayCode extends View {
 
     /**
      * generate QR code of text string
-     * @param text the content
+     *
+     * @param text   the content
      * @param bitmap the bitmap
      */
     public void drawQrCode(String text, Bitmap bitmap) {
