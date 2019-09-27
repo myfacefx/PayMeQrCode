@@ -1,2 +1,2 @@
-include ':app'
+include ':app', ':qrcode_generator'
 rootProject.name='PayMeQrCode'

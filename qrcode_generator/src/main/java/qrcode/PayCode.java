@@ -13,7 +13,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import com.everonet.payme.qrcode.R;
+import com.qrcode.R;
 
 import androidx.annotation.Nullable;
 
@@ -183,12 +183,12 @@ public class PayCode extends View {
         int width = getMySize(500, widthMeasureSpec);
         int height = getMySize(500, heightMeasureSpec);
 
-        this.width = width;
-
         if (width < height) {
             height = width;
+            this.width = height;
         } else {
             width = height;
+            this.width = width;
         }
 
         setMeasuredDimension(width, height);
