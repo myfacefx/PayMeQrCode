@@ -91,6 +91,11 @@ public class PayCode extends View {
                     public void onLoadCleared(@Nullable Drawable placeholder) {
                         drawQrCode(text, R.drawable.logo_payme);
                     }
+
+                    @Override
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        drawQrCode(text, R.drawable.logo_payme);
+                    }
                 });
     }
 
