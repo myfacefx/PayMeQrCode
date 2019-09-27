@@ -100,7 +100,13 @@ text|The content of QR code
 
 ```java
 /**
- * generate QR code of text string
+ * generate QR code of text string.
+ * 
+ * use glide library for download image from url
+ * 
+ * dependencies {
+ *  implementation 'com.github.bumptech.glide:glide:4.10.0'
+ * }
  *
  * @param text the content
  * @param url  the image resource url
