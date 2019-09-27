@@ -19,6 +19,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         payCode = findViewById(R.id.pay_code);
-        payCode.drawQrCode(text, R.drawable.logo_payme);
+        payCode.drawQrCode(text, "http://goo.gl/gEgYUd");
     }
 }

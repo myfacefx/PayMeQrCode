@@ -8,21 +8,30 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.qrcode.R;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class PayCode extends View {
 
     private static final String TAG = PayCode.class.getSimpleName();
 
     private static final float logoPercent = 0.25f;
-    private static final float iconPercent = 0.12f;
+    private static final float iconPercent = 0.10f;
     private static final float logoClipPercent = 0.27f;
     private static final float iconClipPercent = 0.13f;
+
+    private Context context;
 
     private String text;
     private int color;
@@ -45,6 +54,7 @@ public class PayCode extends View {
 
     public PayCode(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        this.context = context;
         //获取自定义属性
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.PayCode);
         text = ta.getString(R.styleable.PayCode_text);
@@ -59,6 +69,29 @@ public class PayCode extends View {
         bitmapIcon = BitmapFactory.decodeResource(getResources(), resIcon);
 
         paint = new Paint();
+    }
+
+    /**
+     * generate QR code of text string
+     *
+     * @param text the content
+     * @param url  the image resource url
+     */
+    public void drawQrCode(final String text, String url) {
+        Glide.with(context)
+                .asBitmap()
+                .load(url)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        drawQrCode(text, resource);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                        drawQrCode(text, R.drawable.logo_payme);
+                    }
+                });
     }
 
     /**
@@ -79,42 +112,8 @@ public class PayCode extends View {
      */
     public void drawQrCode(String text, Bitmap bitmap) {
         this.text = text;
-        this.bitmapLogo = bitmap;
-        invalidate();
-    }
-
-    public void setText(String text) {
-        this.text = text;
-        invalidate();
-    }
-
-    public void setColor(int color) {
-        this.color = color;
-        invalidate();
-    }
-
-    public void setQrBackgroundColor(int backgroundColor) {
-        this.backgroundColor = backgroundColor;
-        invalidate();
-    }
-
-    public void setWidth(float width) {
-        this.width = width;
-        invalidate();
-    }
-
-    public void setMargin(float margin) {
-        this.margin = margin;
-        invalidate();
-    }
-
-    public void setBitmapLogo(Bitmap bitmapLogo) {
-        this.bitmapLogo = bitmapLogo;
-        invalidate();
-    }
-
-    public void setBitmapIcon(Bitmap bitmapIcon) {
-        this.bitmapIcon = bitmapIcon;
+        if (bitmap != null)
+            this.bitmapLogo = bitmap;
         invalidate();
     }
 
@@ -267,10 +266,11 @@ public class PayCode extends View {
      */
     private void drawIcon(Canvas canvas) {
         float iconWidth = ((width - 2 * margin) * iconPercent);
-        float ratio = iconWidth / bitmapIcon.getWidth();
+        float ratioX = iconWidth / bitmapIcon.getWidth();
+        float ratioY = iconWidth / bitmapIcon.getHeight();
         float xOffset = width - margin - iconWidth;
         float yOffset = width - margin - iconWidth;
-        Bitmap icon = BitmapUtil.scaleBitmap(bitmapIcon, ratio);
+        Bitmap icon = BitmapUtil.scaleBitmap(bitmapIcon, ratioX, ratioY);
         if (icon != null) {
             // Apple design guidelines state that corner radius is 80px for a 512px icon
             float radius = iconWidth * (80f / 512);
@@ -285,8 +285,9 @@ public class PayCode extends View {
      */
     private void drawLogo(Canvas canvas) {
         float logoWidth = ((width - 2 * margin) * logoPercent);
-        float ratioLogo = logoWidth / bitmapLogo.getWidth();
-        Bitmap logo = BitmapUtil.scaleBitmap(bitmapLogo, ratioLogo);
+        float ratioX = logoWidth / bitmapLogo.getWidth();
+        float ratioY = logoWidth / bitmapLogo.getHeight();
+        Bitmap logo = BitmapUtil.scaleBitmap(bitmapLogo, ratioX, ratioY);
         if (logo != null) {
             canvas.drawBitmap(logo, (width - logoWidth) / 2, (width - logoWidth) / 2, paint);
         }

@@ -17,17 +17,18 @@ public class BitmapUtil {
      * 按比例缩放图片
      *
      * @param origin 原图
-     * @param ratio  比例
+     * @param ratioX x 比例
+     * @param ratioY y 比例
      * @return 新的bitmap
      */
-    public static Bitmap scaleBitmap(Bitmap origin, float ratio) {
+    public static Bitmap scaleBitmap(Bitmap origin, float ratioX, float ratioY) {
         if (origin == null) {
             return null;
         }
         int width = origin.getWidth();
         int height = origin.getHeight();
         Matrix matrix = new Matrix();
-        matrix.preScale(ratio, ratio);
+        matrix.preScale(ratioX, ratioY);
         Bitmap newBM = Bitmap.createBitmap(origin, 0, 0, width, height, matrix, false);
         if (newBM.equals(origin)) {
             return newBM;
