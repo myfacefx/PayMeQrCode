@@ -8,15 +8,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.qrcode.R;
 
 public class PayCode extends View {
@@ -39,7 +35,6 @@ public class PayCode extends View {
     private Bitmap bitmapIcon;
 
     private Paint paint;
-    private QRCode qrCode;
 
     public PayCode(Context context) {
         this(context, null);
@@ -66,34 +61,6 @@ public class PayCode extends View {
         bitmapIcon = BitmapFactory.decodeResource(getResources(), resIcon);
 
         paint = new Paint();
-    }
-
-    /**
-     * generate QR code of text string
-     *
-     * @param text the content
-     * @param url  the image resource url
-     */
-    public void drawQrCode(final String text, String url) {
-        Glide.with(context)
-                .asBitmap()
-                .load(url)
-                .into(new CustomTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                        drawQrCode(text, resource);
-                    }
-
-                    @Override
-                    public void onLoadCleared(Drawable placeholder) {
-                        drawQrCode(text, bitmapLogo);
-                    }
-
-                    @Override
-                    public void onLoadFailed(Drawable errorDrawable) {
-                        drawQrCode(text, bitmapLogo);
-                    }
-                });
     }
 
     /**
@@ -132,7 +99,7 @@ public class PayCode extends View {
         if (TextUtils.isEmpty(text))
             return;
 
-        qrCode = QRCode.getMinimumQRCode(text, ErrorCorrectionLevel.Q);
+        QRCode qrCode = QRCode.getMinimumQRCode(text, ErrorCorrectionLevel.Q);
 
         int cellCount = qrCode.getModuleCount();
         Log.i(TAG, "cellCount : " + cellCount);

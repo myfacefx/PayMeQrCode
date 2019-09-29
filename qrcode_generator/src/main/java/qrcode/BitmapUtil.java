@@ -33,9 +33,6 @@ public class BitmapUtil {
         if (newBM.equals(origin)) {
             return newBM;
         }
-        if (!origin.isRecycled()) {
-            origin.recycle();
-        }
         return newBM;
     }
 

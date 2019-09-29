@@ -19,10 +19,6 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         payCode = findViewById(R.id.pay_code);
-        /**
-         * text : The content of QR code
-         * url : The url of center logo image
-         */
-        payCode.drawQrCode(text, "http://goo.gl/gEgYUd");
+        payCode.drawQrCode(text, R.drawable.logo_payme);
     }
 }
