@@ -19,10 +19,10 @@ public class PayCode extends View {
 
     private static final String TAG = PayCode.class.getSimpleName();
 
-    private static final float logoPercent = 0.25f;
+    private static final float logoPercent = 0.20f;
     private static final float iconPercent = 0.10f;
-    private static final float logoClipPercent = 0.27f;
-    private static final float iconClipPercent = 0.13f;
+    private static final float logoClipPercent = 0.20f;
+    private static final float iconClipPercent = 0.10f;
 
     private Context context;
 
@@ -99,7 +99,7 @@ public class PayCode extends View {
         if (TextUtils.isEmpty(text))
             return;
 
-        QRCode qrCode = QRCode.getMinimumQRCode(text, ErrorCorrectionLevel.Q);
+        QRCode qrCode = QRCode.getMinimumQRCode(text, ErrorCorrectionLevel.H);
 
         int cellCount = qrCode.getModuleCount();
         Log.i(TAG, "cellCount : " + cellCount);

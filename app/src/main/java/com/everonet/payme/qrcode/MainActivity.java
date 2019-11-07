@@ -9,7 +9,7 @@ public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private static final String text = "https://qr.payme.hsbc.com.hk/2/ThisIsAnExamplePayCode";
+    private static final String text = "https://sacctprodmobsandbox.z7.web.core.windows.net//d144dd62-1aa0-4c1a-9ea5-188f96cf171b";
 
     private PayCode payCode;
 
